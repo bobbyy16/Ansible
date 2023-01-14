@@ -1,0 +1,47 @@
+---
+- name: Install node and npm
+  hosts: 3.7.73.243
+  become: True
+  tasks:
+  - name: Update package index
+    yum:
+      update_cache: true
+  - name: Add Node.js package repository
+    shell: curl -sL https://rpm.nodesource.com/setup_12.x | bash -
+  - name: Install Node.js
+    yum:
+      name: nodejs
+      state: present
+
+- name: Create new Linux user for node app
+  hosts: 3.7.73.243
+  become: True
+  tasks:
+    - name: Create linux user
+      user:
+        name: bobby
+        comment: bobby devops
+        group: devops
+
+- name: Deploy nodejs app
+  hosts: 3.7.73.243
+  become: True
+  become_user: bobby
+  tasks:
+  - name: Unpack the nodejs file
+    unarchive: 
+      src: /home/abhishek/Desktop/misc/DevOps/simple-nodejs/nodejs-app-1.0.0.tgz
+      dest: /home/bobby
+  - name: Install dependencies
+    npm:
+      path: /home/bobby/package
+  - name: Start the app
+    command:
+      chdir: /home/bobby
+      cmd: node server
+    async: 1000
+    poll: 0
+  - name: Ensure app is running
+    shell: ps aux | grep node
+    register: app_status
+  - debug: msg={{app_status.stdout_lines}} 
