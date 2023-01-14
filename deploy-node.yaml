@@ -38,7 +38,7 @@
   - name: Start the app
     command:
       chdir: /home/bobby
-      cmd: node server
+      cmd: node server #blocks the terminal, so to run in background use async and poll
     async: 1000
     poll: 0
   - name: Ensure app is running
