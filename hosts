@@ -7,3 +7,11 @@
 [nexus:vars]
 ansible_ssh_private_key_file=/home/abhishek/.ssh/AWS.pem
 ansible_user=ec2-user
+
+[docker_server]
+13.235.74.153
+65.2.161.58
+
+[docker_server:vars]
+ansible_ssh_private_key_file=/home/abhishek/.ssh/AWS.pem
+ansible_user=ec2-user
