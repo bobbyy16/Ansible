@@ -11,7 +11,7 @@
         kubeconfig: #path of kubeconfig
     - name: Deploy nginx app
       k8s:
-        src: #path to k8s config file
+        src: #path to k8s yaml config file
         state: present
         kubeconfig: #path of kubeconfig or we can set it once in terminal with export K8S_AUTH_KUBECONFIG=
         namespace: my-app 
