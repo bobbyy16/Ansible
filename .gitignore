@@ -1,2 +1,2 @@
 project-vars
-nexus.sh
+*.sh*
