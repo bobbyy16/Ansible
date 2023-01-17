@@ -1,0 +1,17 @@
+---
+- name: Deploy app in new namespace
+  hosts: localhost
+  tasks:
+    - name: Create a k8s namespace
+      k8s:
+        name: my-app
+        api_version: v1
+        kind: Namespace
+        state: present
+        kubeconfig: #path of kubeconfig
+    - name: Deploy nginx app
+      k8s:
+        src: #path to k8s config file
+        state: present
+        kubeconfig: #path of kubeconfig or we can set it once in terminal with export K8S_AUTH_KUBECONFIG=
+        namespace: my-app 
