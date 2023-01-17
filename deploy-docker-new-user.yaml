@@ -1,0 +1,67 @@
+---
+- name: Install python3 and docker  
+  hosts: all
+  become: true
+  gather_facts: False
+  tasks:
+    - name: Install python
+      vars:
+        ansible_python_interpreter: /usr/bin/python
+      yum:
+        name: 
+          - python3
+          - docker
+          - pip
+        update_cache: yes
+        state: present
+
+- name: Install docker-comose
+  hosts: all
+  become: true
+  tasks:
+    - name: Install Docker-Compose
+      get_url:
+        url: https://github.com/docker/compose/releases/download/v2.15.1/docker-compose-linux-{{lookup('pipe','uname -m')}}
+        dest: /usr/local/bin/docker-compose.yaml
+        mode: +x
+        
+- name: Start docker
+  hosts: all
+  become: true
+  tasks:
+    - name: Start docker daemon
+      systemd:
+        name: docker
+        state: started
+    
+- name: Add ec2-user to docker group
+  hosts: all
+  become: true
+  tasks:
+    - name: Add ec2-user to docker group
+      user:
+        name: ec2-user
+        groups: docker
+        append: yes
+    - name: Reconnect to server session
+      meta: reset_connection
+
+- name: Start docker container
+  hosts: all
+  vars_prompt:
+    - name: docker_password
+      prompt: Enter password for docker registry
+  tasks:
+    - name: Copy docker compose
+      copy:
+        src: /home/abhishek/Desktop/misc/DevOps/Ansible/docker-compose.yaml
+        dest: /home/ec2-user/docker-compose.yaml
+    - name: Docker login
+      docker_login:
+        registry_url: https://index.docker.io/v1/
+        username: "{{docker_password }}"
+        password: new-dockerdeploy
+    - name: Start container from compose
+      docker_compose:
+        project_src: /home/ec2-user
+        state: present #present means up or absent means down
