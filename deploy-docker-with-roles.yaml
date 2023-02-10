@@ -37,25 +37,14 @@
 - name: Add ec2-user to docker group
   hosts: all
   become: true
-  tasks:
-   
+  roles: 
+    - create_user
 
 - name: Start docker container
   hosts: all
   vars_prompt:
     - name: docker_password
       prompt: Enter password for docker registry
-  tasks:
-    - name: Copy docker compose
-      copy:
-        src: /home/abhishek/Desktop/misc/DevOps/Ansible/docker-compose.yaml
-        dest: /home/ec2-user/docker-compose.yaml
-    - name: Docker login
-      docker_login:
-        registry_url: https://index.docker.io/v1/
-        username: "{{docker_password }}"
-        password: new-dockerdeploy
-    - name: Start container from compose
-      docker_compose:
-        project_src: /home/ec2-user
-        state: present #present means up or absent means down
+  roles:
+    - start_containers
+    
